@@ -1,0 +1,40 @@
+#!/usr/bin/env bb
+
+(comment
+
+  - faire une requete pour tester l'existence de l'url fournie
+  - ajouter un ou deux tests
+
+  )
+
+
+(defn github-clone-url [url]
+  (let [
+        github-re #"https\://github\.com"
+        github-git "git@github.com:"
+        ]
+    (clojure.string/replace url github-re github-git)
+    )
+  )
+
+(defn url-from-command-line []
+  (let [[url] *command-line-args*]
+    (when (empty? url)
+      (println "Usage: <git-repo-url>")
+      (System/exit 1))
+    url
+    ))
+
+(defn message [status]
+  (if (= 0 (:exit status))
+    "Cloned with success"
+    (str (:err status))
+    )
+  )
+
+(->> (url-from-command-line)
+     (github-clone-url)
+     (shell/sh "git" "clone" )
+     (message)
+     (println)
+ )
